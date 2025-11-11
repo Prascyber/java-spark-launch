@@ -72,7 +72,7 @@ const Home = () => {
           }}
         />
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center text-white">
+          <div className="max-w-3xl mx-auto text-center text-white animate-fade-in">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               Master Java Programming with Live Coaching
             </h1>
@@ -81,16 +81,42 @@ const Home = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/courses">
-                <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg px-8">
+                <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg px-8 hover-scale">
                   Explore Courses
                 </Button>
               </Link>
               <Link to="/signup">
-                <Button size="lg" variant="outline" className="bg-white/10 border-white text-white hover:bg-white/20 text-lg px-8">
+                <Button size="lg" variant="outline" className="bg-white/10 border-white text-white hover:bg-white/20 text-lg px-8 hover-scale">
                   Sign Up Free
                 </Button>
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Video Section */}
+      <section className="py-16 animate-fade-in">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              See What Makes Us Different
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              Watch our introduction to understand our teaching methodology
+            </p>
+          </div>
+          <div className="max-w-4xl mx-auto aspect-video bg-muted rounded-lg overflow-hidden shadow-premium">
+            <iframe
+              width="100%"
+              height="100%"
+              src="https://www.youtube.com/embed/grEKMHGYyns"
+              title="Java Programming Introduction"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+            ></iframe>
           </div>
         </div>
       </section>
@@ -102,7 +128,7 @@ const Home = () => {
             {stats.map((stat, index) => {
               const Icon = stat.icon;
               return (
-                <Card key={index} className="text-center shadow-card">
+                <Card key={index} className="text-center shadow-card hover-scale transition-all">
                   <CardContent className="pt-6">
                     <Icon className="h-12 w-12 mx-auto mb-4 text-primary" />
                     <h3 className="text-3xl font-bold mb-2">{stat.value}</h3>
@@ -115,30 +141,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Video Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              See What Makes Us Different
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              Watch our introduction to understand our teaching methodology
-            </p>
-          </div>
-          <div className="max-w-4xl mx-auto aspect-video bg-muted rounded-lg flex items-center justify-center shadow-premium">
-            <div className="text-center">
-              <BookOpen className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-muted-foreground">
-                Introductory video coming soon
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Features Section */}
-      <section className="py-16 bg-secondary">
+      <section className="py-16 bg-secondary animate-fade-in">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -152,7 +156,7 @@ const Home = () => {
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <Card key={index} className="shadow-card hover:shadow-premium transition-shadow">
+                <Card key={index} className="shadow-card hover:shadow-premium transition-all hover-scale">
                   <CardContent className="pt-6">
                     <Icon className="h-10 w-10 mb-4 text-primary" />
                     <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>

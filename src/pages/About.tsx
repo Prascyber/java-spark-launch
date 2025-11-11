@@ -1,9 +1,29 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Award, Users, BookOpen, Target } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const About = () => {
+  const { user } = useAuth();
+  const [cartItemsCount, setCartItemsCount] = useState(0);
+
+  useEffect(() => {
+    if (user) {
+      fetchCartCount();
+    }
+  }, [user]);
+
+  const fetchCartCount = async () => {
+    if (!user) return;
+    const { count } = await supabase
+      .from("cart_items")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id);
+    setCartItemsCount(count || 0);
+  };
   const values = [
     {
       icon: Target,
@@ -29,9 +49,9 @@ const About = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      <Navbar user={user} cartItemsCount={cartItemsCount} />
       
-      <section className="py-16 bg-gradient-hero">
+      <section className="py-16 bg-gradient-hero animate-fade-in">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
             About JavaMaster
@@ -60,14 +80,14 @@ const About = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-secondary">
+      <section className="py-16 bg-secondary animate-fade-in">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">What We Stand For</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => {
               const Icon = value.icon;
               return (
-                <Card key={index} className="shadow-card hover:shadow-premium transition-shadow">
+                <Card key={index} className="shadow-card hover:shadow-premium transition-all hover-scale">
                   <CardContent className="pt-6">
                     <Icon className="h-12 w-12 mb-4 text-primary" />
                     <h3 className="text-xl font-semibold mb-3">{value.title}</h3>

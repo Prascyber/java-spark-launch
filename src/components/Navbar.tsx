@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart, User, LogOut } from "lucide-react";
+import { Menu, X, ShoppingCart, User, LogOut, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,8 +12,26 @@ interface NavbarProps {
 
 const Navbar = ({ user, cartItemsCount = 0 }: NavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (user) {
+      checkAdminRole();
+    }
+  }, [user]);
+
+  const checkAdminRole = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+    setIsAdmin(!!data);
+  };
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -60,16 +78,18 @@ const Navbar = ({ user, cartItemsCount = 0 }: NavbarProps) => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/cart" className="relative">
-              <Button variant="outline" size="icon">
-                <ShoppingCart className="h-5 w-5" />
-                {cartItemsCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
-                    {cartItemsCount}
-                  </span>
-                )}
-              </Button>
-            </Link>
+            {user && (
+              <Link to="/cart" className="relative">
+                <Button variant="outline" size="icon">
+                  <ShoppingCart className="h-5 w-5" />
+                  {cartItemsCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
+                      {cartItemsCount}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+            )}
             
             {user ? (
               <>
@@ -79,6 +99,14 @@ const Navbar = ({ user, cartItemsCount = 0 }: NavbarProps) => {
                     Dashboard
                   </Button>
                 </Link>
+                {isAdmin && (
+                  <Link to="/admin">
+                    <Button variant="outline" className="bg-accent/10">
+                      <Shield className="h-4 w-4 mr-2" />
+                      Admin
+                    </Button>
+                  </Link>
+                )}
                 <Button variant="outline" onClick={handleLogout}>
                   <LogOut className="h-4 w-4 mr-2" />
                   Logout
@@ -138,12 +166,14 @@ const Navbar = ({ user, cartItemsCount = 0 }: NavbarProps) => {
               Contact
             </Link>
             <div className="pt-4 space-y-3">
-              <Link to="/cart" onClick={() => setIsOpen(false)}>
-                <Button variant="outline" className="w-full">
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Cart ({cartItemsCount})
-                </Button>
-              </Link>
+              {user && (
+                <Link to="/cart" onClick={() => setIsOpen(false)}>
+                  <Button variant="outline" className="w-full">
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    Cart ({cartItemsCount})
+                  </Button>
+                </Link>
+              )}
               {user ? (
                 <>
                   <Link to="/dashboard" onClick={() => setIsOpen(false)}>
@@ -152,6 +182,14 @@ const Navbar = ({ user, cartItemsCount = 0 }: NavbarProps) => {
                       Dashboard
                     </Button>
                   </Link>
+                  {isAdmin && (
+                    <Link to="/admin" onClick={() => setIsOpen(false)}>
+                      <Button variant="outline" className="w-full bg-accent/10">
+                        <Shield className="h-4 w-4 mr-2" />
+                        Admin
+                      </Button>
+                    </Link>
+                  )}
                   <Button variant="outline" onClick={handleLogout} className="w-full">
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout

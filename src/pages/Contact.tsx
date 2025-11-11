@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,8 @@ import { Mail, Phone, MapPin, Send } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 
 const contactSchema = z.object({
@@ -18,6 +20,8 @@ const contactSchema = z.object({
 });
 
 const Contact = () => {
+  const { user } = useAuth();
+  const [cartItemsCount, setCartItemsCount] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -26,6 +30,21 @@ const Contact = () => {
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (user) {
+      fetchCartCount();
+    }
+  }, [user]);
+
+  const fetchCartCount = async () => {
+    if (!user) return;
+    const { count } = await supabase
+      .from("cart_items")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id);
+    setCartItemsCount(count || 0);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,9 +98,9 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      <Navbar user={user} cartItemsCount={cartItemsCount} />
       
-      <section className="py-16 bg-gradient-hero">
+      <section className="py-16 bg-gradient-hero animate-fade-in">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Get in Touch
@@ -94,11 +113,11 @@ const Contact = () => {
 
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 animate-fade-in">
             {contactInfo.map((info, index) => {
               const Icon = info.icon;
               return (
-                <Card key={index} className="shadow-card">
+                <Card key={index} className="shadow-card hover-scale transition-all">
                   <CardContent className="pt-6 text-center">
                     <Icon className="h-10 w-10 mx-auto mb-4 text-primary" />
                     <h3 className="text-lg font-semibold mb-2">{info.title}</h3>
